@@ -7,6 +7,7 @@ type TIMER_LENGTH = typeof TIMER_LENGTH[keyof typeof TIMER_LENGTH];
 
 interface State {
   timeLeft: number;
+  isTimerOn: boolean;
 }
 
 /**
@@ -28,10 +29,13 @@ const secondToMMSS = (second: number) => {
 const App: React.VFC = () => {
   const [state, setState] = useState<State>({
     timeLeft: TIMER_LENGTH.work,
+    isTimerOn: false,
   });
   return (
     <div>
       <div data-testid="timeLeft">25:00</div>
+      <button data-testid="timerButton">
+        {state.isTimerOn ? "停止" : "開始"}</button>
     </div>
   )
 }
