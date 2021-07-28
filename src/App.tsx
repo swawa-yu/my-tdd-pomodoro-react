@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 
 
+/** タイマーモード */
+type TimerMode = "work" | "break";
+
 /** タイマーの長さ */
-const TIMER_LENGTH = { work: 25 * 60, break: 5 * 60 } as const;
-type TIMER_LENGTH = typeof TIMER_LENGTH[keyof typeof TIMER_LENGTH];
+type TimerLength = number;
+const TIMER_LENGTH: { [key in TimerMode]: TimerLength } = { work: 25 * 60, break: 5 * 60 };
 
 interface State {
   timeLeft: number;
   isTimerOn: boolean;
+  timerMode: TimerMode;
 }
 
 /**
@@ -30,12 +34,16 @@ const App: React.VFC = () => {
   const [state, setState] = useState<State>({
     timeLeft: TIMER_LENGTH.work,
     isTimerOn: false,
+    timerMode: "work",
   });
   return (
     <div>
       <div data-testid="timeLeft">25:00</div>
       <button data-testid="timerButton">
         {state.isTimerOn ? "停止" : "開始"}</button>
+      <div data-testid="timerMode">
+        {state.timerMode === "work" ? "作業" : "休憩"}
+      </div>
     </div>
   )
 }
