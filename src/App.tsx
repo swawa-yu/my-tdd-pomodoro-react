@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 
 /** タイマーモード */
@@ -31,20 +31,56 @@ const secondToMMSS = (second: number) => {
 };
 
 const App: React.VFC = () => {
-  const [state, setState] = useState<State>({
+  const [state, setState] = React.useState<State>({
     timeLeft: TIMER_LENGTH.work,
     isTimerOn: false,
-    timerMode: "work",
+    timerMode: "work"
   });
+  const [timer, setTimer] = React.useState<NodeJS.Timeout | undefined>();
+
+  const timerCount = () => {
+    setState((state) => {
+      if (state.timeLeft <= 0) {
+        state = toggleTimerMode(state);
+      }
+      return { ...state, timeLeft: state.timeLeft - 1 };
+    });
+  };
+
+  const onButtonClick = () => {
+    setState((state) => {
+      setTimer(setInterval(() => {
+        timerCount();
+      }, 1000));
+      return { ...state, isTimerOn: !state.isTimerOn };
+    });
+  };
+
+  React.useEffect(() => {
+    return () => {
+      timer && clearInterval(timer);
+    };
+  }, [timer]);
+
+  const toggleTimerMode = ({ timerMode: currentTimerMode }: State): State => {
+    const timerMode: TimerMode = currentTimerMode === "work" ? "break" : "work";
+    return {
+      ...state,
+      timerMode,
+      timeLeft: TIMER_LENGTH[timerMode],
+    };
+  };
+
   return (
-    <div>
-      <div data-testid="timeLeft">25:00</div>
-      <button data-testid="timerButton">
-        {state.isTimerOn ? "停止" : "開始"}</button>
+    <>
+      <div data-testid="timeLeft">{secondToMMSS(state.timeLeft)}</div>
+      <button data-testid="timerButton" onClick={onButtonClick}>
+        {state.isTimerOn ? "停止" : "開始"}
+      </button>
       <div data-testid="timerMode">
         {state.timerMode === "work" ? "作業" : "休憩"}
       </div>
-    </div>
+    </>
   )
 }
 
