@@ -1,19 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-
-/** タイマーモード */
-type TimerMode = "work" | "break";
-
-/** タイマーの長さ */
-type TimerLength = number;
-const TIMER_LENGTH: { [key in TimerMode]: TimerLength } = { work: 25 * 60, break: 5 * 60 };
-
-interface State {
-  timeLeft: number;
-  isTimerOn: boolean;
-  timerMode: TimerMode;
-}
-
 /**
  * 秒の数値をMM:SS形式の文字列に変換します。
  * @param {number} second 秒
@@ -29,6 +15,24 @@ const secondToMMSS = (second: number) => {
   const SS = second % 60 >= 10 ? second % 60 : "0" + (second % 60);
   return MM + ":" + SS;
 };
+
+
+
+
+
+/** タイマーモード */
+type TimerMode = "work" | "break";
+
+/** タイマーの長さ */
+type TimerLength = number;
+const TIMER_LENGTH: { [key in TimerMode]: TimerLength } = { work: 25 * 60, break: 5 * 60 };
+
+interface State {
+  timeLeft: number;
+  isTimerOn: boolean;
+  timerMode: TimerMode;
+}
+
 
 const App: React.VFC = () => {
   const [state, setState] = React.useState<State>({
@@ -49,10 +53,19 @@ const App: React.VFC = () => {
 
   const onButtonClick = () => {
     setState((state) => {
+      timer && clearInterval(timer);
+      if (state.isTimerOn) {
+        return {
+          ...state,
+          timeLeft: TIMER_LENGTH.work,
+          timerMode: "work",
+          isTimerOn: false,
+        };
+      }
       setTimer(setInterval(() => {
         timerCount();
       }, 1000));
-      return { ...state, isTimerOn: !state.isTimerOn };
+      return { ...state, isTimerOn: true };
     });
   };
 
@@ -62,8 +75,8 @@ const App: React.VFC = () => {
     };
   }, [timer]);
 
-  const toggleTimerMode = ({ timerMode: currentTimerMode }: State): State => {
-    const timerMode: TimerMode = currentTimerMode === "work" ? "break" : "work";
+  const toggleTimerMode = (state: State): State => {
+    const timerMode: TimerMode = state.timerMode === "work" ? "break" : "work";
     return {
       ...state,
       timerMode,
