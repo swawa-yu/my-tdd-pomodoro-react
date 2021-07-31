@@ -36,10 +36,17 @@ const App: React.VFC = () => {
     isTimerOn: false,
     timerMode: "work",
   });
+
+  const onButtonClick = () => {
+    setState((state) => {
+      return { ...state, isTimerOn: !state.isTimerOn };
+    });
+  };
+
   return (
     <div>
-      <div data-testid="timeLeft">25:00</div>
-      <button data-testid="timerButton">
+      <div data-testid="timeLeft">{secondToMMSS(state.timeLeft)}</div>
+      <button data-testid="timerButton" onClick={onButtonClick}>
         {state.isTimerOn ? "停止" : "開始"}</button>
       <div data-testid="timerMode">
         {state.timerMode === "work" ? "作業" : "休憩"}
