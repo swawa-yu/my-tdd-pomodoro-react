@@ -40,6 +40,9 @@ const App: React.VFC = () => {
 
   const timerCount = () => {
     setState((state) => {
+      if (state.timeLeft <= 0) {
+        state = toggleTimerMode(state);
+      }
       return { ...state, timeLeft: state.timeLeft - 1 };
     });
   };
@@ -58,6 +61,15 @@ const App: React.VFC = () => {
       timer && clearInterval(timer);
     };
   }, [timer]);
+
+  const toggleTimerMode = ({ timerMode: currentTimerMode }: State): State => {
+    const timerMode: TimerMode = currentTimerMode === "work" ? "break" : "work";
+    return {
+      ...state,
+      timerMode,
+      timeLeft: TIMER_LENGTH[timerMode],
+    };
+  };
 
   return (
     <>
